@@ -1,0 +1,12 @@
+# Meson build output
+/build/
+/meson-logs/
+/meson-private/
+
+# Debian packaging artifacts
+/debian/.debhelper/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/*.log
+/debian/*.substvars
+/debian/video-tagger/

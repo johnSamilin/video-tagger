@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Video Tagger
+Comment=Tag time ranges in local videos
+Exec=video-tagger
+Categories=AudioVideo;Video;
+Terminal=false
