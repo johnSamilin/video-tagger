@@ -1,0 +1,102 @@
+/* ============================================================================
+   Theme: Teenage Engineering
+   Cream + warm grey + near-black + signature orange (#FF4D00) and yellow.
+   Flat, graphic, utilitarian: 2px radius, hairline black rules, bold
+   uppercase labels, mono metadata. Inspired by TE's hardware/print language.
+   ========================================================================== */
+
+html[data-theme="teenage-engineering"] {
+  color-scheme: light;
+
+  --bg: #f2efe8;
+  --bg-accent: #eae5da;
+  --panel: #faf8f3;
+  --panel-2: #eae5da;
+  --panel-3: #f2efe8;
+  --border: #141414;
+  --border-strong: #141414;
+  --text: #141414;
+  --text-muted: #7a766b;
+  --text-invert: #ffffff;
+  --accent: #ff4d00;
+  --accent-2: #ffd02f;
+  --accent-hover: #e04300;
+  --danger: #e60023;
+  --danger-bg: #fde5e5;
+  --selection: #ff4d00;
+  --selection-text: #ffffff;
+  --recording: #ff4d00;
+  --control-bg: #ffffff;
+  --control-hover: #eae5da;
+  --input-bg: #ffffff;
+
+  --radius-sm: 2px;
+  --radius: 2px;
+  --radius-lg: 2px;
+  --radius-pill: 2px;
+  --border-width: 1px;
+  --shadow-sm: none;
+  --shadow: 3px 3px 0 rgba(20, 20, 20, 0.9);
+  --shadow-lg: 5px 5px 0 rgba(20, 20, 20, 0.9);
+
+  --font-ui: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "Roboto Mono", ui-monospace, monospace;
+  --label-transform: uppercase;
+  --label-spacing: 0.12em;
+
+  --tl-bg: #f2efe8;
+  --tl-lane: #eae5da;
+  --tl-label: #7a766b;
+  --tl-playhead: #ff4d00;
+  --tl-range-border: #141414;
+}
+
+html[data-theme="teenage-engineering"] .brand {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="teenage-engineering"] .header {
+  border-bottom: 1px solid var(--border-strong);
+}
+
+html[data-theme="teenage-engineering"] .btn {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  border: 1px solid #141414;
+}
+
+html[data-theme="teenage-engineering"] .btn.primary {
+  box-shadow: 3px 3px 0 rgba(20, 20, 20, 0.9);
+}
+
+html[data-theme="teenage-engineering"] .btn.primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 rgba(20, 20, 20, 0.9);
+}
+
+html[data-theme="teenage-engineering"] .panel h3 {
+  border-bottom: 1px solid #141414;
+  padding-bottom: 4px;
+}
+
+html[data-theme="teenage-engineering"] .tag-dot {
+  border-radius: 0;
+}
+
+html[data-theme="teenage-engineering"] .range-block {
+  border: 1px solid #141414;
+  opacity: 1;
+}
+
+html[data-theme="teenage-engineering"] .range-block.accent-2 {
+  background: var(--accent-2);
+}
+
+html[data-theme="teenage-engineering"] .swatch {
+  border-radius: 0;
+}

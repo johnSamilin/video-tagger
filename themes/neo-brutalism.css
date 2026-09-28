@@ -1,0 +1,98 @@
+/* ============================================================================
+   Theme: Neo-brutalism
+   Cream canvas, black hairline-thick borders, hard offset shadows, zero
+   radius, loud flat accents (pink / yellow / blue / green). Bold, playful.
+   ========================================================================== */
+
+html[data-theme="neo-brutalism"] {
+  color-scheme: light;
+
+  --bg: #f6f1e5;
+  --bg-accent: #efe6d2;
+  --panel: #fffdf6;
+  --panel-2: #f0e8d5;
+  --panel-3: #f6f1e5;
+  --border: #111111;
+  --border-strong: #111111;
+  --text: #111111;
+  --text-muted: #6b6455;
+  --text-invert: #111111;
+  --accent: #ff5fa2;
+  --accent-2: #ffc700;
+  --accent-hover: #ff8fb9;
+  --danger: #ff4d4d;
+  --danger-bg: #ffe3e3;
+  --selection: #ff5fa2;
+  --selection-text: #111111;
+  --recording: #ff4d4d;
+  --control-bg: #fffdf6;
+  --control-hover: #ffd02f;
+  --input-bg: #fffdf6;
+
+  --radius-sm: 0;
+  --radius: 0;
+  --radius-lg: 0;
+  --radius-pill: 0;
+  --border-width: 2px;
+  --shadow-sm: 2px 2px 0 rgba(17, 17, 17, 1);
+  --shadow: 4px 4px 0 rgba(17, 17, 17, 1);
+  --shadow-lg: 7px 7px 0 rgba(17, 17, 17, 1);
+
+  --font-ui: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, monospace;
+  --label-transform: uppercase;
+  --label-spacing: 0.02em;
+
+  --tl-bg: #f6f1e5;
+  --tl-lane: #efe6d2;
+  --tl-label: #6b6455;
+  --tl-playhead: #ff4d4d;
+  --tl-range-border: #111111;
+}
+
+html[data-theme="neo-brutalism"] .header,
+html[data-theme="neo-brutalism"] .query-bar,
+html[data-theme="neo-brutalism"] .controls,
+html[data-theme="neo-brutalism"] .timeline,
+html[data-theme="neo-brutalism"] .statusbar,
+html[data-theme="neo-brutalism"] .sidebar.left,
+html[data-theme="neo-brutalism"] .sidebar.right {
+  border-color: #111111;
+}
+
+html[data-theme="neo-brutalism"] .btn {
+  border: 2px solid #111111;
+  box-shadow: 3px 3px 0 rgba(17, 17, 17, 1);
+  font-weight: 700;
+}
+
+html[data-theme="neo-brutalism"] .btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 rgba(17, 17, 17, 1);
+}
+
+html[data-theme="neo-brutalism"] .btn.primary {
+  background: #ffc700;
+  color: #111111;
+}
+
+html[data-theme="neo-brutalism"] .btn.danger {
+  background: #ff4d4d;
+  color: #111111;
+}
+
+html[data-theme="neo-brutalism"] .tag-dot,
+html[data-theme="neo-brutalism"] .swatch {
+  border-radius: 0;
+  border: 1px solid #111111;
+}
+
+html[data-theme="neo-brutalism"] .range-block {
+  border: 2px solid #111111;
+  opacity: 1;
+}
+
+html[data-theme="neo-brutalism"] .dialog {
+  border: 2px solid #111111;
+}

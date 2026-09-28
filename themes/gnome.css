@@ -1,0 +1,67 @@
+/* ============================================================================
+   Theme: GNOME (Adwaita) — native Linux desktop
+   Light, calm, follows libadwaita's palette, radii and headerbar feel.
+   ========================================================================== */
+
+html[data-theme="gnome"] {
+  color-scheme: light;
+
+  --bg: #fafafa;
+  --bg-accent: #f0efec;
+  --panel: #ffffff;
+  --panel-2: #f0efec;
+  --panel-3: #fafafa;
+  --border: #deddda;
+  --border-strong: #c0bfbc;
+  --text: #241f31;
+  --text-muted: #77767b;
+  --text-invert: #ffffff;
+  --accent: #3584e4;
+  --accent-2: #33d17a;
+  --accent-hover: #2a76cf;
+  --danger: #e01b24;
+  --danger-bg: #fbe9ea;
+  --selection: #3584e4;
+  --selection-text: #ffffff;
+  --recording: #e01b24;
+  --control-bg: #f0efec;
+  --control-hover: #e3e1dd;
+  --input-bg: #ffffff;
+
+  --radius-sm: 6px;
+  --radius: 9px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 32px rgba(0, 0, 0, 0.13);
+
+  --font-ui: system-ui, Cantarell, "Segoe UI", sans-serif;
+  --font-display: var(--font-ui);
+  --font-mono: ui-monospace, "SF Mono", monospace;
+  --label-transform: uppercase;
+  --label-spacing: 0.06em;
+
+  --tl-bg: #fafafa;
+  --tl-lane: #e9e7e3;
+  --tl-label: #77767b;
+  --tl-playhead: #e01b24;
+  --tl-range-border: #241f31;
+}
+
+html[data-theme="gnome"] .header {
+  box-shadow: 0 1px 0 var(--border-strong);
+}
+
+html[data-theme="gnome"] .btn {
+  font-weight: 600;
+}
+
+html[data-theme="gnome"] .btn.primary {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="gnome"] .tag-dot {
+  border-radius: 50%;
+}

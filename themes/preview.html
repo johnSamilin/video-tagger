@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en" data-theme="gnome">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Tagger — theme preview</title>
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="gnome.css" />
+    <link rel="stylesheet" href="teenage-engineering.css" />
+    <link rel="stylesheet" href="neo-brutalism.css" />
+    <link rel="stylesheet" href="glass.css" />
+    <link rel="stylesheet" href="nord.css" />
+  </head>
+  <body>
+    <div class="preview-bar">
+      <span class="title">Video Tagger · theme preview</span>
+      <div class="switcher" id="switcher"></div>
+    </div>
+
+    <div class="app">
+      <header class="header">
+        <span class="brand">Video Tagger</span>
+        <button class="btn primary">Open root folder…</button>
+        <span class="root-path">/home/user/Videos</span>
+      </header>
+
+      <div class="query-bar">
+        <input class="query-input" placeholder="Search: e.g. family and travel" />
+        <span class="query-count">12 videos</span>
+        <button class="btn small">Clear</button>
+      </div>
+
+      <div class="main">
+        <aside class="sidebar left">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Tags</h3>
+              <button class="btn small primary">+ New</button>
+            </div>
+
+            <div class="tag-row active">
+              <span class="tag-dot"></span>
+              <span class="tag-name">family</span>
+              <span class="tag-count">(4)</span>
+              <span class="recording">●</span>
+            </div>
+            <div class="tag-row" style="padding-left: 22px">
+              <span class="tag-dot"></span>
+              <span class="tag-name">mom</span>
+              <span class="tag-count">(2)</span>
+            </div>
+            <div class="tag-row" style="padding-left: 22px">
+              <span class="tag-dot"></span>
+              <span class="tag-name">dad</span>
+              <span class="tag-count">(2)</span>
+            </div>
+            <div class="tag-row">
+              <span class="tag-dot"></span>
+              <span class="tag-name">funny</span>
+              <span class="tag-count">(3)</span>
+            </div>
+            <div class="tag-row">
+              <span class="tag-dot"></span>
+              <span class="tag-name">travel</span>
+              <span class="tag-count">(2)</span>
+            </div>
+          </div>
+        </aside>
+
+        <section class="center">
+          <div class="player">
+            <div class="player-placeholder" style="background: #000">
+              <span>▶ 1920×1080 · 00:00 / 05:34</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="btn">⏮</button>
+            <button class="btn primary">⏵</button>
+            <button class="btn">⏭</button>
+            <span class="time">00:12 / 05:34</span>
+            <input class="seek" type="range" value="20" />
+            <span>🔊</span>
+            <input class="volume" type="range" value="70" />
+          </div>
+
+          <div class="timeline">
+            <div class="timeline-head">
+              <span>Ranges</span>
+              <span class="muted">drag to create · double-click to seek</span>
+            </div>
+            <div class="timeline-body">
+              <div class="lane">
+                <span class="lane-label">family</span>
+                <div class="lane-track">
+                  <div class="range-block" style="left: 8%; width: 22%"></div>
+                  <div class="range-block" style="left: 42%; width: 10%"></div>
+                  <div class="playhead" style="left: 64%"></div>
+                </div>
+              </div>
+              <div class="lane">
+                <span class="lane-label">funny</span>
+                <div class="lane-track">
+                  <div class="range-block accent-2" style="left: 30%; width: 18%"></div>
+                  <div class="playhead" style="left: 64%"></div>
+                </div>
+              </div>
+              <div class="lane">
+                <span class="lane-label">travel</span>
+                <div class="lane-track">
+                  <div class="range-block" style="left: 55%; width: 24%"></div>
+                  <div class="playhead" style="left: 64%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="range-list">
+              <div class="range-row">
+                <span class="swatch"></span>
+                <span>family</span>
+                <span class="muted">00:00:05 – 00:01:20</span>
+                <button class="btn small">Edit</button>
+                <button class="btn small danger">Delete</button>
+              </div>
+              <div class="range-row">
+                <span class="swatch"></span>
+                <span>funny</span>
+                <span class="muted">00:02:10 – 00:02:45</span>
+                <button class="btn small">Edit</button>
+                <button class="btn small danger">Delete</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="sidebar right">
+          <div class="panel">
+            <h3>Videos</h3>
+            <div class="tree-row">▾ 📁 Videos</div>
+            <div class="tree-row" style="padding-left: 18px">▾ 📁 2024</div>
+            <div class="tree-row selected" style="padding-left: 34px">▶ a.mp4</div>
+            <div class="tree-row" style="padding-left: 34px">▶ b.mp4</div>
+            <div class="tree-row" style="padding-left: 18px">▸ 📁 2025</div>
+            <div class="tree-row" style="padding-left: 34px">▶ c.mkv</div>
+          </div>
+        </aside>
+      </div>
+
+      <footer class="statusbar">/home/user/Videos/2024/a.mp4 — 3 tags, 4 ranges</footer>
+    </div>
+
+    <script>
+      const THEMES = [
+        { id: 'gnome', name: 'GNOME' },
+        { id: 'teenage-engineering', name: 'Teenage Engineering' },
+        { id: 'neo-brutalism', name: 'Neo-brutalism' },
+        { id: 'glass', name: 'Glass' },
+        { id: 'nord', name: 'Nord' },
+      ];
+
+      const switcher = document.getElementById('switcher');
+
+      function apply(id) {
+        document.documentElement.setAttribute('data-theme', id);
+        [...switcher.children].forEach((b) => {
+          b.classList.toggle('active', b.dataset.id === id);
+        });
+      }
+
+      THEMES.forEach((t) => {
+        const btn = document.createElement('button');
+        btn.textContent = t.name;
+        btn.dataset.id = t.id;
+        btn.addEventListener('click', () => apply(t.id));
+        switcher.appendChild(btn);
+      });
+
+      apply('gnome');
+    </script>
+  </body>
+</html>

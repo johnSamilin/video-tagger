@@ -1,0 +1,85 @@
+/* ============================================================================
+   Theme: Glass (macOS / aurora)
+   Frosted translucent panels, soft pastel mesh background, generous radii,
+   soft shadows, iOS-blue accent. Airy and modern.
+   ========================================================================== */
+
+html[data-theme="glass"] {
+  color-scheme: light;
+
+  --bg: #eef1f7;
+  --bg-accent: #e3e8f2;
+  --panel: rgba(255, 255, 255, 0.62);
+  --panel-2: rgba(255, 255, 255, 0.45);
+  --panel-3: rgba(255, 255, 255, 0.35);
+  --border: rgba(255, 255, 255, 0.7);
+  --border-strong: rgba(120, 130, 160, 0.25);
+  --text: #1c1c22;
+  --text-muted: #6c7180;
+  --text-invert: #ffffff;
+  --accent: #007aff;
+  --accent-2: #34c759;
+  --accent-hover: #0062cc;
+  --danger: #ff3b30;
+  --danger-bg: rgba(255, 59, 48, 0.1);
+  --selection: rgba(0, 122, 255, 0.18);
+  --selection-text: #0062cc;
+  --recording: #ff3b30;
+  --control-bg: rgba(255, 255, 255, 0.55);
+  --control-hover: rgba(255, 255, 255, 0.8);
+  --input-bg: rgba(255, 255, 255, 0.6);
+
+  --radius-sm: 10px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+  --shadow-sm: 0 1px 3px rgba(30, 40, 80, 0.08);
+  --shadow: 0 8px 24px rgba(30, 40, 80, 0.12);
+  --shadow-lg: 0 18px 48px rgba(30, 40, 80, 0.18);
+
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  --font-display: -apple-system, "SF Pro Display", "Segoe UI", sans-serif;
+  --font-mono: "SF Mono", ui-monospace, monospace;
+  --label-transform: uppercase;
+  --label-spacing: 0.06em;
+
+  --tl-bg: rgba(255, 255, 255, 0.4);
+  --tl-lane: rgba(255, 255, 255, 0.5);
+  --tl-label: #6c7180;
+  --tl-playhead: #007aff;
+  --tl-range-border: #1c1c22;
+}
+
+html[data-theme="glass"] body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #cfe3ff 0%, transparent 55%),
+    radial-gradient(1000px 600px at 110% 10%, #ffd9e8 0%, transparent 55%),
+    radial-gradient(900px 700px at 50% 120%, #d8f3dc 0%, transparent 55%),
+    #eef1f7;
+}
+
+html[data-theme="glass"] .panel,
+html[data-theme="glass"] .header,
+html[data-theme="glass"] .controls,
+html[data-theme="glass"] .timeline,
+html[data-theme="glass"] .statusbar,
+html[data-theme="glass"] .sidebar,
+html[data-theme="glass"] .query-bar {
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+
+html[data-theme="glass"] .dialog {
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+html[data-theme="glass"] .btn.primary {
+  box-shadow: 0 6px 16px rgba(0, 122, 255, 0.35);
+}
+
+html[data-theme="glass"] .tag-dot,
+html[data-theme="glass"] .swatch {
+  border-radius: 50%;
+}

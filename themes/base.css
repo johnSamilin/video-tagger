@@ -1,0 +1,562 @@
+/* ============================================================================
+   Video Tagger — base layout & design tokens (preview)
+   All colors/shapes/typography are driven by CSS variables so each theme in
+   this folder only has to override the tokens (and add small "personality"
+   rules) to restyle the whole app.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* --- palette --- */
+  --bg: #fafafa;
+  --bg-accent: #f0efec;
+  --panel: #ffffff;
+  --panel-2: #f0efec;
+  --panel-3: #fafafa;
+  --border: #deddda;
+  --border-strong: #c0bfbc;
+  --text: #241f31;
+  --text-muted: #77767b;
+  --text-invert: #ffffff;
+  --accent: #3584e4;
+  --accent-2: #33d17a;
+  --accent-hover: #2a76cf;
+  --danger: #e01b24;
+  --danger-bg: #fbe9ea;
+  --selection: #3584e4;
+  --selection-text: #ffffff;
+  --recording: #e01b24;
+  --control-bg: #f0efec;
+  --control-hover: #e3e1dd;
+  --input-bg: #ffffff;
+
+  /* --- shape --- */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 32px rgba(0, 0, 0, 0.14);
+
+  /* --- typography --- */
+  --font-ui: system-ui, Cantarell, "Segoe UI", sans-serif;
+  --font-display: var(--font-ui);
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", monospace;
+  --label-transform: uppercase;
+  --label-spacing: 0.05em;
+
+  /* --- timeline canvas --- */
+  --tl-bg: #fafafa;
+  --tl-lane: #e9e7e3;
+  --tl-label: #77767b;
+  --tl-playhead: #e01b24;
+  --tl-range-border: #241f31;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--bg);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* ============================ Preview chrome ============================ */
+.preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.preview-bar .title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-right: 6px;
+}
+
+.preview-bar .switcher {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.preview-bar .switcher button {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--text);
+  background: var(--control-bg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.preview-bar .switcher button:hover {
+  background: var(--control-hover);
+}
+
+.preview-bar .switcher button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-invert);
+}
+
+/* ============================ App shell ============================ */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 55px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border-bottom: var(--border-width) solid var(--border);
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+
+.root-path {
+  color: var(--text-muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  font-family: var(--font-mono);
+}
+
+.btn {
+  background: var(--control-bg);
+  color: var(--text);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-ui);
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.btn:hover {
+  background: var(--control-hover);
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-invert);
+}
+
+.btn.primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn.small {
+  padding: 2px 9px;
+  font-size: 12px;
+}
+
+.btn.danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--text-invert);
+}
+
+.mini {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.query-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--panel);
+  border-bottom: var(--border-width) solid var(--border);
+}
+
+.query-input {
+  flex: 1;
+  background: var(--input-bg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: var(--font-ui);
+}
+
+.query-count {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.query-error {
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar {
+  width: 260px;
+  min-width: 200px;
+  background: var(--panel);
+  overflow: auto;
+}
+
+.sidebar.left {
+  border-right: var(--border-width) solid var(--border);
+}
+
+.sidebar.right {
+  border-left: var(--border-width) solid var(--border);
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.panel {
+  padding: 10px;
+}
+
+.panel h3 {
+  margin: 4px 0 8px;
+  font-size: 12px;
+  text-transform: var(--label-transform);
+  letter-spacing: var(--label-spacing);
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* ============================ Tree & tag rows ============================ */
+.tree-row,
+.tag-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tree-row:hover,
+.tag-row:hover {
+  background: var(--panel-2);
+}
+
+.tree-row.selected {
+  background: var(--selection);
+  color: var(--selection-text);
+}
+
+.tag-row.active {
+  background: var(--selection);
+  color: var(--selection-text);
+}
+
+.tree-icon {
+  width: 14px;
+  color: var(--text-muted);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.tag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  background: var(--accent);
+}
+
+.tag-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tag-count {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.recording {
+  color: var(--recording);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* ============================ Player & controls ============================ */
+.player {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.player-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  background: var(--bg-accent);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--panel);
+  border-top: var(--border-width) solid var(--border);
+}
+
+.controls .time {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 96px;
+  font-family: var(--font-mono);
+}
+
+.controls .seek {
+  flex: 1;
+}
+
+.controls .volume {
+  width: 80px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--panel-2);
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--panel);
+  cursor: pointer;
+}
+
+/* ============================ Timeline (mock) ============================ */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border-top: var(--border-width) solid var(--border);
+  max-height: 45%;
+  overflow: auto;
+}
+
+.timeline-head {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 8px 14px;
+  font-size: 12px;
+  text-transform: var(--label-transform);
+  letter-spacing: var(--label-spacing);
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.timeline-body {
+  padding: 0 14px 10px;
+  position: relative;
+}
+
+.lane {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.lane-label {
+  width: 96px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lane-track {
+  position: relative;
+  flex: 1;
+  height: 24px;
+  background: var(--tl-lane);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.range-block {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  opacity: 0.8;
+}
+
+.range-block.accent-2 {
+  background: var(--accent-2);
+}
+
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--tl-playhead);
+  z-index: 2;
+}
+
+.range-list {
+  padding: 4px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  background: var(--accent);
+}
+
+/* ============================ Dialogs & status ============================ */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialog {
+  background: var(--panel);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 18px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dialog h3 {
+  margin: 0;
+}
+
+.dialog input {
+  background: var(--input-bg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 6px 10px;
+  font-size: 13px;
+  width: 100%;
+  font-family: var(--font-ui);
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.statusbar {
+  padding: 5px 14px;
+  background: var(--panel);
+  border-top: var(--border-width) solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
