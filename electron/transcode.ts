@@ -6,6 +6,16 @@ import { spawn, ChildProcess } from 'child_process';
 import ffmpegBin from 'ffmpeg-static';
 import ffprobe from 'ffprobe-static';
 
+// When packaged, native binaries extracted via asarUnpack live under
+// app.asar.unpacked, not inside the read-only app.asar archive (spawning a
+// path inside app.asar fails with ENOTDIR). Redirect the resolved paths.
+function unpackPath(p: string): string {
+  return p.replace('app.asar', 'app.asar.unpacked');
+}
+
+const ffmpegPath = unpackPath(ffmpegBin);
+const ffprobePath = unpackPath(ffprobe.path);
+
 // Containers Chromium's <video> can demux directly.
 const DIRECT_PLAYABLE = new Set(['mp4', 'm4v', 'mov', 'webm', 'ogv', 'ogg', 'm4a', 'mp3', 'wav']);
 
@@ -62,7 +72,7 @@ function mediaUrl(filePath: string): string {
 
 function probe(videoPath: string): Promise<ProbeInfo> {
   return new Promise((resolve, reject) => {
-    const proc = spawn(ffprobe.path, [
+    const proc = spawn(ffprobePath, [
       '-v',
       'error',
       '-print_format',
@@ -128,7 +138,7 @@ function startTranscode(videoPath: string, mode: 'remux' | 'transcode', info: Pr
   }
   args.push('-movflags', '+faststart', '-f', 'mp4', partPath);
 
-  const proc = spawn(ffmpegBin, args);
+  const proc = spawn(ffmpegPath, args);
   job.proc = proc;
 
   let errBuf = '';
