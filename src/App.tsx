@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { videoTree } from './stores';
 import { HeaderBar } from './components/HeaderBar';
@@ -15,8 +15,10 @@ const App = observer(() => {
     videoTree.init();
   }, []);
 
+  const [chromeVisible, setChromeVisible] = useState(true);
+
   return (
-    <div className="app">
+    <div className={`app${chromeVisible ? '' : ' chrome-hidden'}`}>
       <HeaderBar />
       <QueryPanel />
       <div className="main">
@@ -33,6 +35,15 @@ const App = observer(() => {
         </aside>
       </div>
       <StatusBar />
+      <button
+        className="floating-info"
+        data-testid="floating-info"
+        aria-label="Toggle top and bottom panels"
+        title="Toggle top and bottom panels"
+        onClick={() => setChromeVisible((v) => !v)}
+      >
+        ⓘ
+      </button>
     </div>
   );
 });

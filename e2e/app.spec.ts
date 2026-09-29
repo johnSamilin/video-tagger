@@ -40,6 +40,31 @@ test.describe('Video Tagger e2e', () => {
     }
   });
 
+  test('collapses and expands the top and bottom panels via the info button', async () => {
+    const fx = setupFixtures();
+    const { app, page } = await launchApp(fx.dir);
+    try {
+      const info = page.getByTestId('floating-info');
+      const appRoot = page.locator('.app');
+
+      await expect(info).toBeVisible();
+      await expect(page.locator('.header')).toBeVisible();
+      await expect(page.locator('.statusbar')).toBeVisible();
+
+      await info.click();
+      await expect(appRoot).toHaveClass(/chrome-hidden/);
+      await expect(page.locator('.header')).toBeHidden();
+      await expect(page.locator('.statusbar')).toBeHidden();
+
+      await info.click();
+      await expect(appRoot).not.toHaveClass(/chrome-hidden/);
+      await expect(page.locator('.header')).toBeVisible();
+      await expect(page.locator('.statusbar')).toBeVisible();
+    } finally {
+      await app.close();
+    }
+  });
+
   test('shows the video tree and aggregates tags from sidecars', async () => {
     const fx = setupFixtures();
     const { app, page } = await launchApp(fx.dir);
