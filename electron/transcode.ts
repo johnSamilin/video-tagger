@@ -6,15 +6,19 @@ import { spawn, ChildProcess } from 'child_process';
 import ffmpegBin from 'ffmpeg-static';
 import ffprobe from 'ffprobe-static';
 
-// When packaged, native binaries extracted via asarUnpack live under
-// app.asar.unpacked, not inside the read-only app.asar archive (spawning a
-// path inside app.asar fails with ENOTDIR). Redirect the resolved paths.
-function unpackPath(p: string): string {
-  return p.replace('app.asar', 'app.asar.unpacked');
+// Resolve ffmpeg/ffprobe binaries.
+//   - dev: use the npm-installed path (node_modules).
+//   - packaged: use the binaries copied to resources/ by forge.config.js
+//     (extraResource). Fall back to the asar-unpacked path for older builds.
+function resolveBinary(name: string, devPath: string): string {
+  if (!app.isPackaged) return devPath;
+  const bundled = path.join(process.resourcesPath, name);
+  if (fs.existsSync(bundled)) return bundled;
+  return devPath.replace('app.asar', 'app.asar.unpacked');
 }
 
-const ffmpegPath = unpackPath(ffmpegBin);
-const ffprobePath = unpackPath(ffprobe.path);
+const ffmpegPath = resolveBinary('ffmpeg', ffmpegBin);
+const ffprobePath = resolveBinary('ffprobe', ffprobe.path);
 
 // Containers Chromium's <video> can demux directly.
 const DIRECT_PLAYABLE = new Set(['mp4', 'm4v', 'mov', 'webm', 'ogv', 'ogg', 'm4a', 'mp3', 'wav']);
