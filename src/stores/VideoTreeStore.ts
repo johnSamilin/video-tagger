@@ -78,4 +78,17 @@ export class VideoTreeStore {
     if (!this.filteredPaths) return this.tree.children;
     return filterTree(this.tree, this.filteredPaths);
   }
+
+  get allVideoPaths(): string[] {
+    const result: string[] = [];
+    const walk = (node: VideoNode) => {
+      if (!node.isDirectory) {
+        result.push(node.path);
+        return;
+      }
+      for (const child of node.children) walk(child);
+    };
+    if (this.tree) walk(this.tree);
+    return result;
+  }
 }

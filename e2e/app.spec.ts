@@ -296,6 +296,26 @@ test.describe('Video Tagger e2e', () => {
     }
   });
 
+  test('filters untagged videos via the Untagged button', async () => {
+    const fx = setupFixtures();
+    const { app, page } = await launchApp(fx.dir);
+    try {
+      const untagged = page.getByTestId('untagged-filter');
+
+      await untagged.click();
+      await expect(page.locator('[data-testid="video-row"][data-name="clip-a.mp4"]')).toBeVisible();
+      await expect(page.locator('[data-testid="video-row"][data-name="clip-b.mp4"]')).toBeHidden();
+      await expect(page.locator('[data-testid="video-row"][data-name="clip-c.mkv"]')).toBeHidden();
+      await expect(page.locator('[data-testid="video-row"][data-name="clip-d.mp4"]')).toBeHidden();
+
+      await untagged.click();
+      await expect(page.locator('[data-testid="video-row"][data-name="clip-a.mp4"]')).toBeVisible();
+      await expect(page.locator('[data-testid="video-row"][data-name="clip-b.mp4"]')).toBeVisible();
+    } finally {
+      await app.close();
+    }
+  });
+
   test('deletes a range via the delete button and updates the sidecar', async () => {
     const fx = setupFixtures();
     const { app, page } = await launchApp(fx.dir);

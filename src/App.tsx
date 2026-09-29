@@ -15,7 +15,7 @@ const App = observer(() => {
     videoTree.init();
   }, []);
 
-  const [chromeVisible, setChromeVisible] = useState(true);
+  const [chromeVisible, setChromeVisible] = useState(false);
 
   return (
     <div className={`app${chromeVisible ? '' : ' chrome-hidden'}`}>
