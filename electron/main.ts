@@ -1,7 +1,12 @@
-import { app, BrowserWindow, protocol, shell } from 'electron';
+import { app, BrowserWindow, protocol, shell, Menu, MenuItem } from 'electron';
 import * as path from 'path';
 import { registerIpc } from './ipc';
 import { registerMediaProtocol } from './media-protocol';
+import { getCacheSizeBytes, clearCache, formatBytes, setOnCacheChanged } from './cache';
+
+if (process.env.VT_USER_DATA) {
+  app.setPath('userData', process.env.VT_USER_DATA);
+}
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -16,6 +21,48 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 let mainWindow: BrowserWindow | null = null;
+let clearCacheMenuItem: MenuItem | null = null;
+
+function refreshCacheLabel() {
+  if (!clearCacheMenuItem) return;
+  clearCacheMenuItem.label = `Очистить кэш (${formatBytes(getCacheSizeBytes())})`;
+}
+
+function buildMenu() {
+  const template: Electron.MenuItemConstructorOptions[] = [
+    ...(process.platform === 'darwin'
+      ? ([{ role: 'appMenu' }] as Electron.MenuItemConstructorOptions[])
+      : []),
+    {
+      label: 'Файл',
+      submenu: [
+        {
+          label: 'Очистить кэш',
+          click: () => {
+            clearCache();
+            refreshCacheLabel();
+          },
+        },
+        { type: 'separator' },
+        { role: 'quit' },
+      ],
+    },
+    { role: 'editMenu' },
+    { role: 'viewMenu' },
+    { role: 'windowMenu' },
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  for (const top of menu.items) {
+    for (const item of top.submenu?.items ?? []) {
+      if (item.label?.startsWith('Очистить кэш')) {
+        clearCacheMenuItem = item;
+      }
+    }
+  }
+  Menu.setApplicationMenu(menu);
+  refreshCacheLabel();
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -45,6 +92,8 @@ function createWindow() {
 app.whenReady().then(() => {
   registerMediaProtocol();
   registerIpc();
+  buildMenu();
+  setOnCacheChanged(refreshCacheLabel);
   createWindow();
 
   app.on('activate', () => {
@@ -56,4 +105,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('will-quit', () => {
+  clearCache();
 });

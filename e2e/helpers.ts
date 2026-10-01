@@ -83,7 +83,10 @@ export function sidecarPathFor(videoPath: string): string {
   return `${videoPath}.tags.json`;
 }
 
-export async function launchApp(rootDir: string): Promise<{ app: ElectronApplication; page: Page }> {
+export async function launchApp(
+  rootDir: string,
+  opts?: { userData?: string },
+): Promise<{ app: ElectronApplication; page: Page }> {
   const app = await electron.launch({
     executablePath: electronPath,
     args: ['.'],
@@ -91,6 +94,7 @@ export async function launchApp(rootDir: string): Promise<{ app: ElectronApplica
     env: {
       ...process.env,
       VT_ROOT: rootDir,
+      ...(opts?.userData ? { VT_USER_DATA: opts.userData } : {}),
       ELECTRON_DISABLE_SECURITY_WARNINGS: 'true',
     },
   });

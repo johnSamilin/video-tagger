@@ -5,6 +5,7 @@ import * as crypto from 'crypto';
 import { spawn, ChildProcess } from 'child_process';
 import ffmpegBin from 'ffmpeg-static';
 import ffprobe from 'ffprobe-static';
+import { transcodeDir, onCacheChanged } from './cache';
 
 // Resolve ffmpeg/ffprobe binaries.
 //   - dev: use the npm-installed path (node_modules).
@@ -61,10 +62,6 @@ interface Job {
 }
 
 const jobs = new Map<string, Job>();
-
-function transcodeDir(): string {
-  return path.join(app.getPath('userData'), 'transcode');
-}
 
 function cacheKey(videoPath: string): string {
   return crypto.createHash('sha1').update(videoPath).digest('hex');
@@ -164,15 +161,27 @@ function startTranscode(videoPath: string, mode: 'remux' | 'transcode', info: Pr
       job.progress = 1;
       job.url = mediaUrl(outputPath);
     } else {
+      try {
+        if (fs.existsSync(partPath)) fs.unlinkSync(partPath);
+      } catch {
+        // ignore
+      }
       job.status = 'error';
       job.error = errBuf.trim().slice(-2000) || 'Transcode failed';
     }
+    onCacheChanged?.();
   });
 
   proc.on('error', (err) => {
     job.proc = undefined;
+    try {
+      if (fs.existsSync(partPath)) fs.unlinkSync(partPath);
+    } catch {
+      // ignore
+    }
     job.status = 'error';
     job.error = err.message;
+    onCacheChanged?.();
   });
 }
 

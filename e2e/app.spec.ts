@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { setupFixtures, launchApp, waitForVideoReady, sidecarPathFor } from './helpers';
 
 // End-to-end coverage mapped to the architecture doc `plans/video-tagger-plan.md`:
@@ -314,6 +316,26 @@ test.describe('Video Tagger e2e', () => {
     } finally {
       await app.close();
     }
+  });
+
+  test('transcodes to a cache dir and clears it on quit', async () => {
+    const fx = setupFixtures();
+    const userData = fs.mkdtempSync(path.join(os.tmpdir(), 'vt-ud-'));
+    const transcodeDir = path.join(userData, 'transcode');
+
+    const { app, page } = await launchApp(fx.dir, { userData });
+    await page.locator('[data-testid="video-row"][data-name="clip-c.mkv"]').click();
+    await waitForVideoReady(page, 60_000);
+    await expect
+      .poll(() => (fs.existsSync(transcodeDir) ? fs.readdirSync(transcodeDir).length : 0), {
+        timeout: 10_000,
+      })
+      .toBeGreaterThan(0);
+
+    await app.close();
+
+    // auto-cleanup on quit cleared the transcode cache
+    expect(fs.existsSync(transcodeDir) ? fs.readdirSync(transcodeDir) : []).toHaveLength(0);
   });
 
   test('deletes a range via the delete button and updates the sidecar', async () => {

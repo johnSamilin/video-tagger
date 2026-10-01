@@ -18,6 +18,14 @@ export async function loadSidecar(videoPath: string): Promise<Sidecar> {
 export async function saveSidecar(videoPath: string, sidecar: Sidecar): Promise<void> {
   const target = sidecarPathFor(videoPath);
   const tmp = `${target}.${process.pid}.${Date.now()}.tmp`;
-  await fs.writeFile(tmp, sidecarToJson(sidecar), 'utf-8');
-  await fs.rename(tmp, target);
+  try {
+    await fs.writeFile(tmp, sidecarToJson(sidecar), 'utf-8');
+    await fs.rename(tmp, target);
+  } finally {
+    try {
+      await fs.unlink(tmp);
+    } catch {
+      // ignore (tmp already renamed away)
+    }
+  }
 }
