@@ -21,6 +21,15 @@ export class SidecarStore {
     this.sidecar = res.success && res.sidecar ? res.sidecar : { version: 1, tags: {} };
   }
 
+  clear() {
+    this.currentVideoPath = null;
+    this.sidecar = { version: 1, tags: {} };
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = null;
+    }
+  }
+
   get sortedTags(): string[] {
     return Object.keys(this.sidecar.tags).sort();
   }

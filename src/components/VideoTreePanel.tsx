@@ -1,12 +1,29 @@
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { VideoNode } from '../types';
-import { player, sidecar, videoTree } from '../stores';
+import { player, sidecar, tags, videoTree } from '../stores';
 
 function openVideo(path: string) {
+  tags.clearPending();
   videoTree.selectVideo(path);
   player.openVideo(path);
   sidecar.load(path);
+}
+
+function toggleMulti(path: string) {
+  videoTree.toggleMultiSelect(path);
+  const n = videoTree.selectedPaths.length;
+  if (n === 0) {
+    tags.clearPending();
+    player.stop();
+    sidecar.clear();
+  } else if (n === 1) {
+    openVideo(videoTree.selectedPaths[0]);
+  } else {
+    tags.clearPending();
+    player.stop();
+    sidecar.clear();
+  }
 }
 
 const TreeNode = observer(({ node, depth }: { node: VideoNode; depth: number }) => {
@@ -31,7 +48,7 @@ const TreeNode = observer(({ node, depth }: { node: VideoNode; depth: number }) 
     );
   }
 
-  const selected = videoTree.selectedVideoPath === node.path;
+  const selected = videoTree.selectedPaths.includes(node.path);
   return (
     <div
       className={`tree-row file ${selected ? 'selected' : ''}`}
@@ -40,6 +57,14 @@ const TreeNode = observer(({ node, depth }: { node: VideoNode; depth: number }) 
       data-name={node.displayName}
       onClick={() => openVideo(node.path)}
     >
+      <input
+        type="checkbox"
+        className="tree-check"
+        data-testid="video-check"
+        checked={videoTree.isMultiSelected(node.path)}
+        onClick={(e) => e.stopPropagation()}
+        onChange={() => toggleMulti(node.path)}
+      />
       <span className="tree-icon">▶</span>
       <span>{node.displayName}</span>
     </div>

@@ -23,6 +23,7 @@ export class VideoTreeStore {
   scanning = false;
   scanError: string | null = null;
   selectedVideoPath: string | null = null;
+  selectedPaths: string[] = [];
   filteredPaths: Set<string> | null = null;
   onScanDone: ((root: string) => void) | null = null;
 
@@ -67,6 +68,31 @@ export class VideoTreeStore {
 
   selectVideo(path: string) {
     this.selectedVideoPath = path;
+    this.selectedPaths = [path];
+  }
+
+  toggleMultiSelect(path: string) {
+    const i = this.selectedPaths.indexOf(path);
+    if (i >= 0) this.selectedPaths.splice(i, 1);
+    else this.selectedPaths.push(path);
+    this.selectedVideoPath = this.selectedPaths.length === 1 ? this.selectedPaths[0] : null;
+  }
+
+  clearMultiSelect() {
+    this.selectedPaths = [];
+    this.selectedVideoPath = null;
+  }
+
+  isMultiSelected(path: string): boolean {
+    return this.selectedPaths.includes(path);
+  }
+
+  get selectedCount(): number {
+    return this.selectedPaths.length;
+  }
+
+  get isBulk(): boolean {
+    return this.selectedPaths.length > 1;
   }
 
   applyFilter(paths: Set<string> | null) {

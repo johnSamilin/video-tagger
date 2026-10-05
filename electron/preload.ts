@@ -13,6 +13,14 @@ const api = {
   deleteTag: (rootPath: string, tagName: string) =>
     ipcRenderer.invoke('vt:delete-tag', rootPath, tagName),
   prepareMedia: (videoPath: string) => ipcRenderer.invoke('vt:prepare-media', videoPath),
+  openFolder: (videoPath: string) => ipcRenderer.invoke('vt:open-folder', videoPath),
+  onOpenFolder: (cb: () => void) => {
+    const listener = () => cb();
+    ipcRenderer.on('vt:menu-open-folder', listener);
+    return () => ipcRenderer.removeListener('vt:menu-open-folder', listener);
+  },
+  bulkTag: (videoPaths: string[], tagNames: string[], mode: 'add' | 'remove') =>
+    ipcRenderer.invoke('vt:bulk-tag', videoPaths, tagNames, mode),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);

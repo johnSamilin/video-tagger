@@ -3,6 +3,9 @@ import { player, sidecar, videoTree } from '../stores';
 import { formatTimeShort } from '../lib/time';
 
 export const StatusBar = observer(() => {
+  if (videoTree.isBulk) {
+    return <footer className="statusbar">{videoTree.selectedCount} files selected</footer>;
+  }
   const video = videoTree.selectedVideoPath;
   if (!video) return <footer className="statusbar">No video selected</footer>;
 

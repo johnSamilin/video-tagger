@@ -185,6 +185,15 @@ function startTranscode(videoPath: string, mode: 'remux' | 'transcode', info: Pr
   });
 }
 
+export async function probeDuration(videoPath: string): Promise<number> {
+  try {
+    const info = await probe(videoPath);
+    return Number.isFinite(info.duration) ? info.duration : 0;
+  } catch {
+    return 0;
+  }
+}
+
 export async function prepareMedia(videoPath: string): Promise<MediaStatus> {
   const key = cacheKey(videoPath);
 

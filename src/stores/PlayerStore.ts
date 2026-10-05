@@ -8,7 +8,6 @@ export class PlayerStore {
   duration = 0;
   currentTime = 0;
   isPlaying = false;
-  volume = 1;
   error: string | null = null;
   preparing = false;
   transcodeProgress = 0;
@@ -83,6 +82,19 @@ export class PlayerStore {
     else this.play();
   }
 
+  stop() {
+    this.loadToken++;
+    this.videoElement?.pause();
+    this.currentVideoPath = null;
+    this.mediaUrl = null;
+    this.duration = 0;
+    this.currentTime = 0;
+    this.isPlaying = false;
+    this.error = null;
+    this.preparing = false;
+    this.transcodeProgress = 0;
+  }
+
   seek(time: number) {
     const el = this.videoElement;
     if (el) el.currentTime = time;
@@ -91,11 +103,6 @@ export class PlayerStore {
 
   seekBy(delta: number) {
     this.seek(this.currentTime + delta);
-  }
-
-  setVolume(volume: number) {
-    this.volume = volume;
-    if (this.videoElement) this.videoElement.volume = volume;
   }
 
   setCurrentTime(time: number) {

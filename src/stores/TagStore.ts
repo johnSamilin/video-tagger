@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 import { TagTreeNode } from '../types';
 import { getNativeAPI } from '../lib/nativeBridge';
 import { PlayerStore } from './PlayerStore';
@@ -93,6 +93,10 @@ export class TagStore {
     }
   }
 
+  clearPending() {
+    this.pending.clear();
+  }
+
   markWholeFile(tagName: string) {
     this.pending.delete(tagName);
     const duration = this.player.duration;
@@ -123,5 +127,17 @@ export class TagStore {
     this.localTags = this.localTags.filter((t) => t !== tagName);
     this.pending.delete(tagName);
     await this.build(rootPath);
+  }
+
+  async bulkApply(
+    videoPaths: string[],
+    tagNames: string[],
+    mode: 'add' | 'remove',
+    rootPath: string | null,
+  ) {
+    const api = getNativeAPI();
+    if (!api || videoPaths.length === 0 || tagNames.length === 0) return;
+    await api.bulkTag(toJS(videoPaths), toJS(tagNames), mode);
+    if (rootPath) await this.build(rootPath);
   }
 }

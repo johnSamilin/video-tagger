@@ -1,10 +1,11 @@
-import { ipcMain, dialog, BrowserWindow } from 'electron';
+import { ipcMain, dialog, BrowserWindow, shell } from 'electron';
+import * as path from 'path';
 import { Sidecar, VideoNode } from '../shared/types';
 import { loadConfig, saveConfig } from './config';
 import { scanRoot } from './scanner';
 import { loadSidecar, saveSidecar } from './sidecar-store';
 import { buildRegistry } from './tag-registry';
-import { prepareMedia } from './transcode';
+import { prepareMedia, probeDuration } from './transcode';
 
 function collectVideos(node: VideoNode): string[] {
   const result: string[] = [];
@@ -119,4 +120,46 @@ export function registerIpc() {
       return { success: false, error: (err as Error).message };
     }
   });
+
+  ipcMain.handle('vt:open-folder', async (_event, videoPath: string) => {
+    try {
+      await shell.openPath(path.dirname(videoPath));
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: (err as Error).message };
+    }
+  });
+
+  ipcMain.handle(
+    'vt:bulk-tag',
+    async (_event, videoPaths: string[], tagNames: string[], mode: 'add' | 'remove') => {
+      try {
+        for (const videoPath of videoPaths) {
+          const sidecar = await loadSidecar(videoPath);
+          let changed = false;
+          for (const tagName of tagNames) {
+            if (mode === 'remove') {
+              if (sidecar.tags[tagName]) {
+                delete sidecar.tags[tagName];
+                changed = true;
+              }
+            } else {
+              const existing = sidecar.tags[tagName];
+              if (!existing || existing.length === 0) {
+                const duration = await probeDuration(videoPath);
+                if (duration > 0) {
+                  sidecar.tags[tagName] = [{ start: 0, end: duration }];
+                  changed = true;
+                }
+              }
+            }
+          }
+          if (changed) await saveSidecar(videoPath, sidecar);
+        }
+        return { success: true };
+      } catch (err) {
+        return { success: false, error: (err as Error).message };
+      }
+    },
+  );
 }

@@ -269,6 +269,37 @@ test.describe('Video Tagger e2e', () => {
     }
   });
 
+  test('switching videos clears pending range selections', async () => {
+    const fx = setupFixtures();
+    const { app, page } = await launchApp(fx.dir);
+    try {
+      await page.locator('[data-testid="video-row"][data-name="clip-a.mp4"]').click();
+      await waitForVideoReady(page);
+
+      await page.getByTestId('new-tag-btn').click();
+      await page.getByTestId('tag-name-input').fill('pending-tag');
+      await page.getByTestId('tag-submit').click();
+
+      const tagRow = page.locator('[data-testid="tag-row"][data-name="pending-tag"]');
+      await tagRow.click();
+      await expect(page.getByTestId('recording')).toHaveCount(1);
+
+      await page.locator('[data-testid="video-row"][data-name="clip-b.mp4"]').click();
+      await waitForVideoReady(page);
+
+      await expect(page.getByTestId('recording')).toHaveCount(0);
+
+      await expect
+        .poll(() => {
+          const b = JSON.parse(fs.readFileSync(sidecarPathFor(fx.clipB), 'utf-8'));
+          return b.tags['pending-tag'] === undefined && b.tags.family !== undefined;
+        })
+        .toBe(true);
+    } finally {
+      await app.close();
+    }
+  });
+
   test('filters videos by tag query (AND / OR)', async () => {
     const fx = setupFixtures();
     const { app, page } = await launchApp(fx.dir);
@@ -403,6 +434,68 @@ test.describe('Video Tagger e2e', () => {
           const c = JSON.parse(fs.readFileSync(sidecarPathFor(fx.clipB), 'utf-8'));
           return c.tags.travel === undefined;
         })
+        .toBe(true);
+    } finally {
+      await app.close();
+    }
+  });
+
+  test('toggles playback with the spacebar and has no volume slider', async () => {
+    const fx = setupFixtures();
+    const { app, page } = await launchApp(fx.dir);
+    try {
+      await page.locator('[data-testid="video-row"][data-name="clip-b.mp4"]').click();
+      await waitForVideoReady(page);
+
+      await expect(page.getByTestId('play-btn')).toContainText('⏵');
+      await expect(page.locator('input.volume')).toHaveCount(0);
+
+      await page.keyboard.press('Space');
+      await expect(page.getByTestId('play-btn')).toContainText('⏸');
+
+      await page.keyboard.press('Space');
+      await expect(page.getByTestId('play-btn')).toContainText('⏵');
+    } finally {
+      await app.close();
+    }
+  });
+
+  test('bulk-tags multiple files without touching unrelated tags', async () => {
+    const fx = setupFixtures();
+    const { app, page } = await launchApp(fx.dir);
+    try {
+      await page
+        .locator('[data-testid="video-row"][data-name="clip-a.mp4"] [data-testid="video-check"]')
+        .check();
+      await page
+        .locator('[data-testid="video-row"][data-name="clip-b.mp4"] [data-testid="video-check"]')
+        .check();
+
+      await expect(page.getByTestId('bulk-panel')).toBeVisible();
+      await expect(page.getByTestId('play-btn')).toHaveCount(0);
+
+      await page.locator('label.bulk-tag', { hasText: 'family' }).locator('input').check();
+      await page.getByTestId('bulk-add').click();
+
+      await page.locator('label.bulk-tag', { hasText: 'family' }).locator('input').uncheck();
+      await page.locator('label.bulk-tag', { hasText: 'travel' }).locator('input').check();
+      await page.getByTestId('bulk-remove').click();
+
+      await expect
+        .poll(
+          () => {
+            const aPath = sidecarPathFor(fx.clipA);
+            if (!fs.existsSync(aPath)) return false;
+            const a = JSON.parse(fs.readFileSync(aPath, 'utf-8'));
+            const b = JSON.parse(fs.readFileSync(sidecarPathFor(fx.clipB), 'utf-8'));
+            return (
+              (a.tags.family?.length ?? 0) === 1 &&
+              b.tags.travel === undefined &&
+              b.tags.family !== undefined
+            );
+          },
+          { timeout: 10_000 },
+        )
         .toBe(true);
     } finally {
       await app.close();

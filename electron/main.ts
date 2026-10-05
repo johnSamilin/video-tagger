@@ -37,6 +37,13 @@ function buildMenu() {
       label: 'Файл',
       submenu: [
         {
+          label: 'Открыть папку',
+          click: () => {
+            mainWindow?.webContents.send('vt:menu-open-folder');
+          },
+        },
+        { type: 'separator' },
+        {
           label: 'Очистить кэш',
           click: () => {
             clearCache();

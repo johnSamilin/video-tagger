@@ -13,4 +13,6 @@ export const IPC_CHANNELS = {
   renameTag: 'vt:rename-tag',
   deleteTag: 'vt:delete-tag',
   prepareMedia: 'vt:prepare-media',
+  openFolder: 'vt:open-folder',
+  bulkTag: 'vt:bulk-tag',
 } as const;

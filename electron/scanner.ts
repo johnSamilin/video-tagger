@@ -13,6 +13,7 @@ const VIDEO_EXTENSIONS = new Set([
   '.wmv',
   '.ts',
   '.mts',
+  '.3gp',
 ]);
 
 async function walk(dir: string): Promise<VideoNode> {

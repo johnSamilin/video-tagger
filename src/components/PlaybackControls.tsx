@@ -25,15 +25,5 @@ export const PlaybackControls = observer(() => (
       value={player.currentTime}
       onChange={(e) => player.seek(Number(e.target.value))}
     />
-    <span className="volume-label">🔊</span>
-    <input
-      className="volume"
-      type="range"
-      min={0}
-      max={1}
-      step={0.05}
-      value={player.volume}
-      onChange={(e) => player.setVolume(Number(e.target.value))}
-    />
   </div>
 ));

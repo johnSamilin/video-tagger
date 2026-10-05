@@ -21,6 +21,13 @@ export interface ElectronAPI {
       progress?: number;
     }
   >;
+  openFolder(videoPath: string): Promise<ApiResult>;
+  onOpenFolder(cb: () => void): () => void;
+  bulkTag(
+    videoPaths: string[],
+    tagNames: string[],
+    mode: 'add' | 'remove',
+  ): Promise<ApiResult>;
 }
 
 declare global {
