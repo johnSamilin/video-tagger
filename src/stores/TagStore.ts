@@ -1,8 +1,11 @@
 import { makeAutoObservable, toJS } from 'mobx';
 import { TagTreeNode } from '../types';
 import { getNativeAPI } from '../lib/nativeBridge';
+import { loadJSON, saveJSON } from '../lib/persist';
 import { PlayerStore } from './PlayerStore';
 import { SidecarStore } from './SidecarStore';
+
+const EXPANDED_KEY = 'video-tagger:tag-expanded';
 
 function cloneNode(node: TagTreeNode): TagTreeNode {
   return { name: node.name, count: node.count, children: node.children.map(cloneNode) };
@@ -36,6 +39,7 @@ export class TagStore {
   constructor(player: PlayerStore, sidecar: SidecarStore) {
     this.player = player;
     this.sidecar = sidecar;
+    this.expanded = new Set(loadJSON<string[]>(EXPANDED_KEY, []));
     makeAutoObservable(this);
   }
 
@@ -110,6 +114,7 @@ export class TagStore {
   toggleExpand(path: string) {
     if (this.expanded.has(path)) this.expanded.delete(path);
     else this.expanded.add(path);
+    saveJSON(EXPANDED_KEY, [...this.expanded]);
   }
 
   async rename(rootPath: string, oldName: string, newName: string) {
@@ -126,6 +131,13 @@ export class TagStore {
     await api.deleteTag(rootPath, tagName);
     this.localTags = this.localTags.filter((t) => t !== tagName);
     this.pending.delete(tagName);
+    await this.build(rootPath);
+  }
+
+  async findDuplicates(rootPath: string) {
+    const api = getNativeAPI();
+    if (!api) return;
+    await api.findDuplicates(rootPath);
     await this.build(rootPath);
   }
 

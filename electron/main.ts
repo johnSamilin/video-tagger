@@ -42,6 +42,12 @@ function buildMenu() {
             mainWindow?.webContents.send('vt:menu-open-folder');
           },
         },
+        {
+          label: 'Найти дубликаты',
+          click: () => {
+            mainWindow?.webContents.send('vt:menu-find-duplicates');
+          },
+        },
         { type: 'separator' },
         {
           label: 'Очистить кэш',

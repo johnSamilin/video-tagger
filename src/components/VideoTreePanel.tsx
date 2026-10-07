@@ -1,14 +1,6 @@
-import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { VideoNode } from '../types';
-import { player, sidecar, tags, videoTree } from '../stores';
-
-function openVideo(path: string) {
-  tags.clearPending();
-  videoTree.selectVideo(path);
-  player.openVideo(path);
-  sidecar.load(path);
-}
+import { openVideo, player, sidecar, tags, videoTree } from '../stores';
 
 function toggleMulti(path: string) {
   videoTree.toggleMultiSelect(path);
@@ -27,15 +19,14 @@ function toggleMulti(path: string) {
 }
 
 const TreeNode = observer(({ node, depth }: { node: VideoNode; depth: number }) => {
-  const [expanded, setExpanded] = useState(true);
-
   if (node.isDirectory) {
+    const expanded = videoTree.isDirExpanded(node.path);
     return (
       <div>
         <div
           className="tree-row dir"
           style={{ paddingLeft: depth * 12 }}
-          onClick={() => setExpanded(!expanded)}
+          onClick={() => videoTree.toggleDir(node.path)}
         >
           <span className="tree-icon">{expanded ? '▾' : '▸'}</span>
           <span>📁 {node.displayName}</span>

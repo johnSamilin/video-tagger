@@ -1,6 +1,10 @@
 import { makeAutoObservable } from 'mobx';
 import { VideoNode } from '../types';
 import { getNativeAPI } from '../lib/nativeBridge';
+import { loadJSON, saveJSON } from '../lib/persist';
+
+const COLLAPSED_KEY = 'video-tagger:video-collapsed';
+const SELECTED_KEY = 'video-tagger:selected-video';
 
 function filterTree(node: VideoNode, paths: Set<string>): VideoNode[] {
   const result: VideoNode[] = [];
@@ -25,7 +29,10 @@ export class VideoTreeStore {
   selectedVideoPath: string | null = null;
   selectedPaths: string[] = [];
   filteredPaths: Set<string> | null = null;
+  collapsedDirs: Set<string> = new Set(loadJSON<string[]>(COLLAPSED_KEY, []));
   onScanDone: ((root: string) => void) | null = null;
+  onVideosTrashed: (() => void) | null = null;
+  onRestoreVideo: ((path: string) => void) | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -38,6 +45,14 @@ export class VideoTreeStore {
     if (config.success && config.rootPath) {
       this.rootPath = config.rootPath;
       await this.scan(config.rootPath);
+      this.restoreSelection();
+    }
+  }
+
+  restoreSelection() {
+    const saved = loadJSON<string | null>(SELECTED_KEY, null);
+    if (saved && this.allVideoPaths.includes(saved)) {
+      this.onRestoreVideo?.(saved);
     }
   }
 
@@ -69,6 +84,7 @@ export class VideoTreeStore {
   selectVideo(path: string) {
     this.selectedVideoPath = path;
     this.selectedPaths = [path];
+    saveJSON(SELECTED_KEY, path);
   }
 
   toggleMultiSelect(path: string) {
@@ -76,11 +92,35 @@ export class VideoTreeStore {
     if (i >= 0) this.selectedPaths.splice(i, 1);
     else this.selectedPaths.push(path);
     this.selectedVideoPath = this.selectedPaths.length === 1 ? this.selectedPaths[0] : null;
+    saveJSON(SELECTED_KEY, this.selectedVideoPath);
   }
 
   clearMultiSelect() {
     this.selectedPaths = [];
     this.selectedVideoPath = null;
+    saveJSON(SELECTED_KEY, null);
+  }
+
+  isDirExpanded(path: string): boolean {
+    return !this.collapsedDirs.has(path);
+  }
+
+  toggleDir(path: string) {
+    if (this.collapsedDirs.has(path)) this.collapsedDirs.delete(path);
+    else this.collapsedDirs.add(path);
+    saveJSON(COLLAPSED_KEY, [...this.collapsedDirs]);
+  }
+
+  async trashSelected() {
+    const api = getNativeAPI();
+    const paths = this.selectedPaths.slice();
+    if (!api || paths.length === 0) return;
+    const res = await api.trashVideos(paths);
+    if (res.success) {
+      this.clearMultiSelect();
+      this.onVideosTrashed?.();
+      if (this.rootPath) await this.scan(this.rootPath);
+    }
   }
 
   isMultiSelected(path: string): boolean {

@@ -15,4 +15,6 @@ export const IPC_CHANNELS = {
   prepareMedia: 'vt:prepare-media',
   openFolder: 'vt:open-folder',
   bulkTag: 'vt:bulk-tag',
+  trashVideos: 'vt:trash-videos',
+  findDuplicates: 'vt:find-duplicates',
 } as const;

@@ -28,6 +28,9 @@ export interface ElectronAPI {
     tagNames: string[],
     mode: 'add' | 'remove',
   ): Promise<ApiResult>;
+  trashVideos(videoPaths: string[]): Promise<ApiResult>;
+  findDuplicates(rootPath: string): Promise<ApiResult & { count?: number }>;
+  onFindDuplicates(cb: () => void): () => void;
 }
 
 declare global {

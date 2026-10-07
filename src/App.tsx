@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { player, videoTree } from './stores';
+import { player, tags, videoTree } from './stores';
 import { getNativeAPI } from './lib/nativeBridge';
 import { HeaderBar } from './components/HeaderBar';
 import { QueryPanel } from './components/QueryPanel';
@@ -39,12 +39,41 @@ const App = observer(() => {
   }, []);
 
   useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Delete' && e.code !== 'Backspace') return;
+      const el = document.activeElement as HTMLElement | null;
+      if (
+        el &&
+        (el.tagName === 'INPUT' ||
+          el.tagName === 'TEXTAREA' ||
+          el.tagName === 'SELECT' ||
+          el.isContentEditable)
+      ) {
+        return;
+      }
+      if (videoTree.selectedPaths.length === 0) return;
+      e.preventDefault();
+      void videoTree.trashSelected();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  useEffect(() => {
     const api = getNativeAPI();
     if (!api) return;
-    return api.onOpenFolder(() => {
+    const offOpenFolder = api.onOpenFolder(() => {
       const path = player.currentVideoPath;
       if (path) api.openFolder(path);
     });
+    const offFindDuplicates = api.onFindDuplicates(() => {
+      const root = videoTree.rootPath;
+      if (root) void tags.findDuplicates(root);
+    });
+    return () => {
+      offOpenFolder();
+      offFindDuplicates();
+    };
   }, []);
 
   const [chromeVisible, setChromeVisible] = useState(true);

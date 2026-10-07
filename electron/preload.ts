@@ -21,6 +21,13 @@ const api = {
   },
   bulkTag: (videoPaths: string[], tagNames: string[], mode: 'add' | 'remove') =>
     ipcRenderer.invoke('vt:bulk-tag', videoPaths, tagNames, mode),
+  trashVideos: (videoPaths: string[]) => ipcRenderer.invoke('vt:trash-videos', videoPaths),
+  findDuplicates: (rootPath: string) => ipcRenderer.invoke('vt:find-duplicates', rootPath),
+  onFindDuplicates: (cb: () => void) => {
+    const listener = () => cb();
+    ipcRenderer.on('vt:menu-find-duplicates', listener);
+    return () => ipcRenderer.removeListener('vt:menu-find-duplicates', listener);
+  },
 };
 
 contextBridge.exposeInMainWorld('electronAPI', api);

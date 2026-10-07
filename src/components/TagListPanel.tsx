@@ -1,7 +1,7 @@
 import { useState, type MouseEvent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { TagTreeNode } from '../types';
-import { tags, videoTree } from '../stores';
+import { query, tags, videoTree } from '../stores';
 import { NewTagDialog } from './NewTagDialog';
 import { ConfirmDialog } from './ConfirmDialog';
 
@@ -63,6 +63,15 @@ const TagRow = observer(
               </button>
               {menuOpen && (
                 <div className="menu">
+                  <button
+                    data-testid="tag-add-query-btn"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      query.addTag(fullPath);
+                    }}
+                  >
+                    Add to query
+                  </button>
                   <button
                     data-testid="tag-rename-btn"
                     onClick={() => {
