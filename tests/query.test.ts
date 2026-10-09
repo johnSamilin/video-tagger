@@ -48,4 +48,21 @@ describe('query', () => {
     expect(() => runQuery('family and', index, universe)).toThrow();
     expect(() => runQuery('(family', index, universe)).toThrow();
   });
+
+  it('matches tags containing spaces', () => {
+    const spaced = {
+      'my cool tag': ['a.mp4', 'b.mp4'],
+      other: ['b.mp4'],
+      'new year': ['c.mkv'],
+    };
+    const uni = ['a.mp4', 'b.mp4', 'c.mkv'];
+    expect(sorted(runQuery('my cool tag', spaced, uni))).toEqual(['a.mp4', 'b.mp4']);
+    expect(sorted(runQuery('my cool tag and other', spaced, uni))).toEqual(['b.mp4']);
+    expect(sorted(runQuery('my cool tag or new year', spaced, uni))).toEqual([
+      'a.mp4',
+      'b.mp4',
+      'c.mkv',
+    ]);
+    expect(sorted(runQuery('not new year', spaced, uni))).toEqual(['a.mp4', 'b.mp4']);
+  });
 });

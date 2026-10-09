@@ -6,22 +6,51 @@ export type QueryNode =
 
 const OPERATORS = new Set(['and', 'or', 'not']);
 
+function isSpace(ch: string): boolean {
+  return ch === ' ' || ch === '\t' || ch === '\n';
+}
+
+// Tokenizes a query into tag names (which may contain spaces) and operators.
+// Operators (and/or/not) are recognized as standalone, case-insensitive words;
+// everything between them is treated as a single tag name.
 function tokenize(input: string): string[] {
-  const tokens: string[] = [];
-  let current = '';
-  for (const ch of input) {
+  const atoms: string[] = [];
+  let i = 0;
+  const n = input.length;
+  while (i < n) {
+    while (i < n && isSpace(input[i])) i++;
+    if (i >= n) break;
+    const ch = input[i];
     if (ch === '(' || ch === ')') {
-      if (current.trim()) tokens.push(current.trim());
-      tokens.push(ch);
-      current = '';
-    } else if (ch === ' ' || ch === '\t' || ch === '\n') {
-      if (current.trim()) tokens.push(current.trim());
-      current = '';
+      atoms.push(ch);
+      i++;
+      continue;
+    }
+    const start = i;
+    while (i < n && !isSpace(input[i]) && input[i] !== '(' && input[i] !== ')') i++;
+    atoms.push(input.slice(start, i));
+  }
+
+  const tokens: string[] = [];
+  const buffer: string[] = [];
+  const flush = () => {
+    if (buffer.length > 0) {
+      tokens.push(buffer.join(' '));
+      buffer.length = 0;
+    }
+  };
+  for (const atom of atoms) {
+    if (atom === '(' || atom === ')') {
+      flush();
+      tokens.push(atom);
+    } else if (OPERATORS.has(atom.toLowerCase())) {
+      flush();
+      tokens.push(atom.toLowerCase());
     } else {
-      current += ch;
+      buffer.push(atom);
     }
   }
-  if (current.trim()) tokens.push(current.trim());
+  flush();
   return tokens;
 }
 
