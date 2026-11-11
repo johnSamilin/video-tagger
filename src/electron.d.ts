@@ -1,5 +1,5 @@
 import type { ApiResult } from './lib/ipc-contracts';
-import type { Sidecar, TagTreeNode, VideoNode } from './types';
+import type { MediaTransferMode, Sidecar, TagTreeNode, VideoNode } from './types';
 
 export interface ElectronAPI {
   selectRoot(): Promise<ApiResult & { path?: string }>;
@@ -29,6 +29,14 @@ export interface ElectronAPI {
     mode: 'add' | 'remove',
   ): Promise<ApiResult>;
   trashVideos(videoPaths: string[]): Promise<ApiResult>;
+  selectDestination(): Promise<ApiResult & { path?: string }>;
+  transferMedia(
+    rootPath: string,
+    videoPaths: string[],
+    destinationPath: string,
+    mode: MediaTransferMode,
+    preserveFolders: boolean,
+  ): Promise<ApiResult>;
   findDuplicates(rootPath: string): Promise<ApiResult & { count?: number }>;
   onFindDuplicates(cb: () => void): () => void;
 }

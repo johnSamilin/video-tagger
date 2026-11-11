@@ -22,6 +22,14 @@ const api = {
   bulkTag: (videoPaths: string[], tagNames: string[], mode: 'add' | 'remove') =>
     ipcRenderer.invoke('vt:bulk-tag', videoPaths, tagNames, mode),
   trashVideos: (videoPaths: string[]) => ipcRenderer.invoke('vt:trash-videos', videoPaths),
+  selectDestination: () => ipcRenderer.invoke('vt:select-destination'),
+  transferMedia: (
+    rootPath: string,
+    videoPaths: string[],
+    destinationPath: string,
+    mode: 'copy' | 'move',
+    preserveFolders: boolean,
+  ) => ipcRenderer.invoke('vt:transfer-media', rootPath, videoPaths, destinationPath, mode, preserveFolders),
   findDuplicates: (rootPath: string) => ipcRenderer.invoke('vt:find-duplicates', rootPath),
   onFindDuplicates: (cb: () => void) => {
     const listener = () => cb();

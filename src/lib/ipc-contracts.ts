@@ -16,5 +16,7 @@ export const IPC_CHANNELS = {
   openFolder: 'vt:open-folder',
   bulkTag: 'vt:bulk-tag',
   trashVideos: 'vt:trash-videos',
+  selectDestination: 'vt:select-destination',
+  transferMedia: 'vt:transfer-media',
   findDuplicates: 'vt:find-duplicates',
 } as const;

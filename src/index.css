@@ -581,6 +581,14 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: default;
 }
 
+.bulk-file-actions {
+  flex-wrap: wrap;
+}
+
+.bulk-error {
+  color: var(--danger);
+}
+
 /* Dialogs */
 .dialog-overlay {  position: fixed;
   inset: 0;

@@ -1,12 +1,13 @@
 import { ipcMain, dialog, BrowserWindow, shell } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Sidecar, VideoNode } from '../shared/types';
+import { MediaTransferMode, Sidecar, VideoNode } from '../shared/types';
 import { loadConfig, saveConfig } from './config';
 import { scanRoot } from './scanner';
 import { loadSidecar, saveSidecar, sidecarPathFor } from './sidecar-store';
 import { buildRegistry } from './tag-registry';
 import { prepareMedia, probeDuration } from './transcode';
+import { transferMedia } from './media-operations';
 
 function collectVideos(node: VideoNode): string[] {
   const result: string[] = [];
@@ -26,7 +27,7 @@ export function registerIpc() {
     const win = BrowserWindow.fromWebContents(event.sender);
     const result = await dialog.showOpenDialog(win!, {
       properties: ['openDirectory'],
-      title: 'Select video root folder',
+      title: 'Select media root folder',
     });
     if (result.canceled || result.filePaths.length === 0) {
       return { success: false };
@@ -185,6 +186,32 @@ export function registerIpc() {
       return { success: true };
     } catch (err) {
       return { success: false, error: (err as Error).message };
+    }
+  });
+
+  ipcMain.handle('vt:select-destination', async (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    const result = await dialog.showOpenDialog(win!, {
+      properties: ['openDirectory'],
+      title: 'Choose destination folder',
+    });
+    return result.canceled ? { success: false } : { success: true, path: result.filePaths[0] };
+  });
+
+  ipcMain.handle('vt:transfer-media', async (
+    _event,
+    rootPath: string,
+    videoPaths: string[],
+    destinationPath: string,
+    mode: MediaTransferMode,
+    preserveFolders: boolean,
+  ) => {
+    try {
+      if (mode !== 'copy' && mode !== 'move') throw new Error('Invalid transfer mode');
+      await transferMedia(rootPath, videoPaths, destinationPath, mode, preserveFolders);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: (error as Error).message };
     }
   });
 

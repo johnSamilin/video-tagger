@@ -558,4 +558,64 @@ test.describe('Video Tagger e2e', () => {
       await app.close();
     }
   });
+
+  test('copies media and sidecars to a folder and moves them preserving their root-relative folders', async () => {
+    const fx = setupFixtures();
+    const destination = fs.mkdtempSync(path.join(os.tmpdir(), 'vt-destination-'));
+    const moveDestination = fs.mkdtempSync(path.join(os.tmpdir(), 'vt-move-'));
+    const nestedDir = path.join(fx.dir, 'album');
+    fs.mkdirSync(nestedDir);
+    const nested = path.join(nestedDir, 'song.wav');
+    fs.writeFileSync(nested, 'audio data');
+    fs.writeFileSync(sidecarPathFor(nested), JSON.stringify({ version: 1, tags: { music: [] } }));
+    const { app, page } = await launchApp(fx.dir);
+    try {
+      await app.evaluate(({ dialog }, target) => {
+        dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [target] });
+      }, destination);
+
+      await page.locator('[data-testid="video-row"][data-name="clip-a.mp4"] [data-testid="video-check"]').check();
+      await page.locator('[data-testid="video-row"][data-name="clip-b.mp4"] [data-testid="video-check"]').check();
+      await page.getByTestId('bulk-copy').click();
+      await expect.poll(() => fs.existsSync(path.join(destination, 'clip-b.mp4.tags.json'))).toBe(true);
+      expect(fs.readFileSync(path.join(destination, 'clip-b.mp4.tags.json'), 'utf8'))
+        .toBe(fs.readFileSync(sidecarPathFor(fx.clipB), 'utf8'));
+      expect(fs.existsSync(fx.clipA)).toBe(true);
+
+      await page.locator('[data-testid="video-row"][data-name="clip-b.mp4"] [data-testid="video-check"]').uncheck();
+      await page.locator('[data-testid="video-row"][data-name="song.wav"] [data-testid="video-check"]').check();
+      await app.evaluate(({ dialog }, target) => {
+        dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [target] });
+      }, moveDestination);
+      await page.getByTestId('bulk-move-tree').click();
+      await expect.poll(() => fs.existsSync(path.join(moveDestination, 'album', 'song.wav.tags.json'))).toBe(true);
+      await expect.poll(() => fs.existsSync(nested)).toBe(false);
+      expect(fs.existsSync(sidecarPathFor(nested))).toBe(false);
+      await expect.poll(() => fs.existsSync(fx.clipA)).toBe(false);
+
+      await page.locator('[data-testid="video-row"][data-name="clip-b.mp4"] [data-testid="video-check"]').check();
+      await page.locator('[data-testid="video-row"][data-name="clip-d.mp4"] [data-testid="video-check"]').check();
+      await app.evaluate(({ dialog }, target) => {
+        dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [target] });
+      }, destination);
+      await page.getByTestId('bulk-move').click();
+      await expect(page.getByRole('alert')).toContainText('already exists');
+      expect(fs.existsSync(fx.clipB)).toBe(true);
+      expect(fs.existsSync(fx.clipD)).toBe(true);
+
+      await page.getByTestId('bulk-delete').click();
+      await expect(page.getByText('Move selected files to Trash?')).toBeVisible();
+      await page.getByRole('button', { name: 'Cancel' }).click();
+      expect(fs.existsSync(fx.clipB)).toBe(true);
+      await page.getByTestId('bulk-delete').click();
+      await page.getByTestId('confirm-ok').click();
+      await expect.poll(() => fs.existsSync(fx.clipB)).toBe(false);
+      await expect.poll(() => fs.existsSync(sidecarPathFor(fx.clipB))).toBe(false);
+      await expect.poll(() => fs.existsSync(fx.clipD)).toBe(false);
+    } finally {
+      await app.close();
+      fs.rmSync(destination, { recursive: true, force: true });
+      fs.rmSync(moveDestination, { recursive: true, force: true });
+    }
+  });
 });

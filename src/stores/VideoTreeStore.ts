@@ -119,8 +119,9 @@ export class VideoTreeStore {
     if (res.success) {
       this.clearMultiSelect();
       this.onVideosTrashed?.();
-      if (this.rootPath) await this.scan(this.rootPath);
     }
+    if (this.rootPath) await this.scan(this.rootPath);
+    return res;
   }
 
   isMultiSelected(path: string): boolean {

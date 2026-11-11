@@ -15,6 +15,8 @@ export interface VideoNode {
   children: VideoNode[];
 }
 
+export type MediaTransferMode = 'copy' | 'move';
+
 export interface TagInfo {
   name: string;
   count: number;
