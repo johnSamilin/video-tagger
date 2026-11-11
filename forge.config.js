@@ -1,4 +1,4 @@
-import ffprobe from 'ffprobe-static';
+import ffprobe from '@ffprobe-installer/ffprobe';
 import ffmpegStatic from 'ffmpeg-static';
 
 // Resolve the platform-specific binaries at build time and copy them out of

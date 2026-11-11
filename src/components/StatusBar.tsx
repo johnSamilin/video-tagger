@@ -7,7 +7,7 @@ export const StatusBar = observer(() => {
     return <footer className="statusbar">{videoTree.selectedCount} files selected</footer>;
   }
   const video = videoTree.selectedVideoPath;
-  if (!video) return <footer className="statusbar">No video selected</footer>;
+  if (!video) return <footer className="statusbar">No media selected</footer>;
 
   const tagCount = Object.keys(sidecar.sidecar.tags).length;
   const rangeCount = Object.values(sidecar.sidecar.tags).reduce((n, r) => n + r.length, 0);

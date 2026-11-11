@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import { spawn, ChildProcess } from 'child_process';
 import ffmpegBin from 'ffmpeg-static';
-import ffprobe from 'ffprobe-static';
+import ffprobe from '@ffprobe-installer/ffprobe';
 import { transcodeDir, onCacheChanged } from './cache';
 
 // Resolve ffmpeg/ffprobe binaries.
@@ -22,7 +22,7 @@ const ffmpegPath = resolveBinary('ffmpeg', ffmpegBin);
 const ffprobePath = resolveBinary('ffprobe', ffprobe.path);
 
 // Containers Chromium's <video> can demux directly.
-const DIRECT_PLAYABLE = new Set(['mp4', 'm4v', 'mov', 'webm', 'ogv', 'ogg', 'm4a', 'mp3', 'wav']);
+const DIRECT_PLAYABLE = new Set(['mp4', 'm4v', 'mov', 'webm', 'ogv', 'ogg', 'oga', 'opus', 'm4a', 'mp3', 'wav']);
 
 // Codecs Chromium can decode natively.
 const DECODABLE_VIDEO = new Set(['h264', 'vp8', 'vp9', 'av1', 'theora']);
@@ -94,7 +94,8 @@ function probe(videoPath: string): Promise<ProbeInfo> {
       try {
         const data = JSON.parse(out);
         const duration = parseFloat(data.format?.duration ?? '0');
-        const video = data.streams?.find((s: { codec_type: string }) => s.codec_type === 'video');
+        const video = data.streams?.find((s: { codec_type: string; disposition?: { attached_pic?: number } }) =>
+          s.codec_type === 'video' && !s.disposition?.attached_pic);
         const audio = data.streams?.find((s: { codec_type: string }) => s.codec_type === 'audio');
         resolve({
           duration: Number.isFinite(duration) ? duration : 0,
@@ -128,16 +129,20 @@ function decide(videoPath: string, info: ProbeInfo): 'direct' | 'remux' | 'trans
 function startTranscode(videoPath: string, mode: 'remux' | 'transcode', info: ProbeInfo, job: Job) {
   const dir = transcodeDir();
   fs.mkdirSync(dir, { recursive: true });
-  const outputPath = path.join(dir, `${cacheKey(videoPath)}.mp4`);
+  const audioOnly = !info.videoCodec;
+  const extension = audioOnly ? '.m4a' : '.mp4';
+  const outputPath = path.join(dir, `${cacheKey(videoPath)}${extension}`);
   const partPath = `${outputPath}.part`;
 
-  const args = ['-hide_banner', '-y', '-i', videoPath, '-map', '0:v:0', '-map', '0:a:0?'];
-  if (mode === 'remux') {
-    args.push('-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k');
+  const args = ['-hide_banner', '-y', '-i', videoPath];
+  if (audioOnly) {
+    args.push('-map', '0:a:0', '-c:a', 'aac', '-b:a', '192k');
+  } else if (mode === 'remux') {
+    args.push('-map', '0:v:0', '-map', '0:a:0?', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k');
   } else {
-    args.push('-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-c:a', 'aac', '-b:a', '192k');
+    args.push('-map', '0:v:0', '-map', '0:a:0?', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-c:a', 'aac', '-b:a', '192k');
   }
-  args.push('-movflags', '+faststart', '-f', 'mp4', partPath);
+  args.push('-movflags', '+faststart', '-f', audioOnly ? 'ipod' : 'mp4', partPath);
 
   const proc = spawn(ffmpegPath, args);
   job.proc = proc;
@@ -224,7 +229,7 @@ export async function prepareMedia(videoPath: string): Promise<MediaStatus> {
     return { status: 'ready', url: ready.url, progress: 1 };
   }
 
-  const outputPath = path.join(transcodeDir(), `${key}.mp4`);
+  const outputPath = path.join(transcodeDir(), `${key}${info.videoCodec ? '.mp4' : '.m4a'}`);
   if (fs.existsSync(outputPath)) {
     const ready: Job = { status: 'ready', url: mediaUrl(outputPath), progress: 1 };
     jobs.set(key, ready);

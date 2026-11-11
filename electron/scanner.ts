@@ -1,6 +1,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { VideoNode } from '../shared/types';
+import { AUDIO_EXTENSIONS } from '../shared/media';
 
 const VIDEO_EXTENSIONS = new Set([
   '.mp4',
@@ -41,8 +42,11 @@ async function walk(dir: string): Promise<VideoNode> {
       if (child.children.length > 0) {
         children.push(child);
       }
-    } else if (isFile && VIDEO_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
-      children.push({ path: fullPath, displayName: entry.name, isDirectory: false, children: [] });
+    } else if (isFile) {
+      const extension = path.extname(entry.name).toLowerCase();
+      if (VIDEO_EXTENSIONS.has(extension) || AUDIO_EXTENSIONS.has(extension)) {
+        children.push({ path: fullPath, displayName: entry.name, isDirectory: false, children: [] });
+      }
     }
   }
 

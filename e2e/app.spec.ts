@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { spawnSync } from 'child_process';
+import ffmpeg from 'ffmpeg-static';
 import { setupFixtures, launchApp, waitForVideoReady, sidecarPathFor } from './helpers';
 
 // End-to-end coverage mapped to the architecture doc `plans/video-tagger-plan.md`:
@@ -17,6 +19,61 @@ import { setupFixtures, launchApp, waitForVideoReady, sidecarPathFor } from './h
 // 8. Rename / delete tag everywhere                (§6 TagListPanel context menu)
 
 test.describe('Video Tagger e2e', () => {
+  test('finds, plays and tags an audio file, including one requiring conversion', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'vt-audio-'));
+    const audioPath = path.join(dir, 'song.flac');
+    const mp3Path = path.join(dir, 'track.mp3');
+    const result = spawnSync(ffmpeg, [
+      '-y', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=8', audioPath,
+    ], { encoding: 'utf-8' });
+    expect(result.status, result.stderr).toBe(0);
+    const mp3Result = spawnSync(ffmpeg, [
+      '-y', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=8', mp3Path,
+    ], { encoding: 'utf-8' });
+    expect(mp3Result.status, mp3Result.stderr).toBe(0);
+
+    const { app, page } = await launchApp(dir);
+    try {
+      await page.locator('[data-testid="video-row"][data-name="song.flac"]').click();
+      try {
+        await page.waitForFunction(() => {
+          const audio = document.querySelector('audio');
+          return !!audio && audio.readyState >= 1 && audio.duration > 0;
+        }, undefined, { timeout: 15_000 });
+      } catch (error) {
+        const state = await page.evaluate(() => ({
+          audio: document.querySelector('audio')?.outerHTML,
+          readyState: document.querySelector('audio')?.readyState,
+          mediaError: document.querySelector('audio')?.error?.message,
+          player: document.querySelector('.player, .player-placeholder')?.textContent,
+        }));
+        throw new Error(`${String(error)}: ${JSON.stringify(state)}`);
+      }
+
+      await page.getByTestId('play-btn').click();
+      await expect(page.getByTestId('play-btn')).toContainText('⏸');
+      await page.locator('input.seek').fill('1');
+      await page.getByTestId('new-tag-btn').click();
+      await page.getByTestId('tag-name-input').fill('music');
+      await page.getByTestId('tag-submit').click();
+      const tag = page.locator('[data-testid="tag-row"][data-name="music"]');
+      await tag.click();
+      await page.locator('input.seek').fill('3');
+      await tag.click();
+
+      await expect(page.getByTestId('range-row').filter({ hasText: 'music' })).toBeVisible();
+      await expect.poll(() => fs.existsSync(sidecarPathFor(audioPath))).toBe(true);
+      expect(JSON.parse(fs.readFileSync(sidecarPathFor(audioPath), 'utf-8')).tags.music).toHaveLength(1);
+
+      await page.locator('[data-testid="video-row"][data-name="track.mp3"]').click();
+      await expect(page.locator('audio')).toHaveAttribute('src', /track\.mp3/);
+      await page.waitForFunction(() => document.querySelector('audio')?.readyState >= 1);
+    } finally {
+      await app.close();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   test('switches between GNOME and Teenage Engineering themes', async () => {
     const fx = setupFixtures();
     const { app, page } = await launchApp(fx.dir);

@@ -389,6 +389,15 @@ body,
   object-fit: contain;
 }
 
+.player audio {
+  display: none;
+}
+
+.audio-title {
+  color: #fff;
+  font-size: 20px;
+}
+
 .player-placeholder {
   flex: 1;
   display: flex;

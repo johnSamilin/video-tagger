@@ -4,7 +4,7 @@ import { getNativeAPI } from '../lib/nativeBridge';
 export class PlayerStore {
   currentVideoPath: string | null = null;
   mediaUrl: string | null = null;
-  videoElement: HTMLVideoElement | null = null;
+  videoElement: HTMLMediaElement | null = null;
   duration = 0;
   currentTime = 0;
   isPlaying = false;
@@ -18,7 +18,7 @@ export class PlayerStore {
     makeAutoObservable(this);
   }
 
-  attach(element: HTMLVideoElement | null) {
+  attach(element: HTMLMediaElement | null) {
     this.videoElement = element;
   }
 
@@ -65,7 +65,7 @@ export class PlayerStore {
       setTimeout(() => this.prepareLoop(path, token), 800);
     } else {
       this.preparing = false;
-      this.error = res.error ?? 'Failed to prepare video';
+      this.error = res.error ?? 'Failed to prepare media';
     }
   }
 

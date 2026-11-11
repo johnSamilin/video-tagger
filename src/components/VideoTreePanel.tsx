@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { VideoNode } from '../types';
 import { openVideo, player, sidecar, tags, videoTree } from '../stores';
+import { isAudioFile } from '../../shared/media';
 
 function toggleMulti(path: string) {
   videoTree.toggleMultiSelect(path);
@@ -56,7 +57,7 @@ const TreeNode = observer(({ node, depth }: { node: VideoNode; depth: number }) 
         onClick={(e) => e.stopPropagation()}
         onChange={() => toggleMulti(node.path)}
       />
-      <span className="tree-icon">▶</span>
+       <span className="tree-icon">{isAudioFile(node.path) ? '♫' : '▶'}</span>
       <span>{node.displayName}</span>
     </div>
   );
@@ -66,7 +67,7 @@ export const VideoTreePanel = observer(() => {
   if (videoTree.scanning) {
     return (
       <div className="panel">
-        <h3>Videos</h3>
+        <h3>Media</h3>
         <div className="muted">Scanning…</div>
       </div>
     );
@@ -74,20 +75,20 @@ export const VideoTreePanel = observer(() => {
   if (!videoTree.rootPath) {
     return (
       <div className="panel">
-        <h3>Videos</h3>
+        <h3>Media</h3>
         <div className="muted">Choose a root folder to start.</div>
       </div>
     );
   }
   return (
     <div className="panel">
-      <h3>Videos</h3>
+      <h3>Media</h3>
       <div className="tree">
         {videoTree.visibleTree.map((node) => (
           <TreeNode key={node.path} node={node} depth={0} />
         ))}
         {videoTree.visibleTree.length === 0 && (
-          <div className="muted">No matching videos.</div>
+          <div className="muted">No matching media files.</div>
         )}
       </div>
     </div>
